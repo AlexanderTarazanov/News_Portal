@@ -1,0 +1,57 @@
+- в консоли импортируем модели:
+from django.contrib.auth.models import User
+from news.models import Author, Category, Post, Comment
+
+1) Создаем двух пользователей:
+user1 = User.objects.create_user('username1')
+user2 = User.objects.create_user('username2')
+
+2) Создаем два объекта модели Author, связанные с пользователями:
+author1 = Author.objects.create(user=user1)
+author2 = Author.objects.create(user=user2)
+
+3) Добавляем 4 категории в модель Category:
+category1 = Category.objects.create(name='Главное')
+category2 = Category.objects.create(name='Спорт')
+category3 = Category.objects.create(name='Интересное')
+category4 = Category.objects.create(name='Технологии')
+
+4) Добавляем 2 статьи и одну новость:
+post1 = Post.objects.create(author=author1, post_type='статья', title='статья 1', text='текст статьи номер 1')
+post2 = Post.objects.create(author=author2, post_type='статья', title='статья 2', text='текст статьи номер 2')
+news1 = Post.objects.create(author=author1, post_type='новость', title='новость', text='текст новости номер 1')
+
+5) Присваиваем категории:
+post1.categories.add(category1, category2)
+post2.categories.add(category3)
+news1.categories.add(category4)
+
+6) Создаем 4 комментария к объектам модели Post: 
+comment1 = Comment.objects.create(post=post1, user=user1, text='текст комментария  1')
+comment2 = Comment.objects.create(post=post2, user=user2, text='текст комментария 2')
+comment3 = Comment.objects.create(post=post1, user=user2, text='текст комментария 3')
+comment4 = Comment.objects.create(post=news1, user=user1, text='текст комментария 4')
+
+7) Применяем функции like() и dislike():
+post1.like()
+post2.dislike()
+comment1.like()
+comment2.dislike()
+
+8) Обновляем рейтинги пользователей:
+author1.update_rating()
+author2.update_rating()
+
+
+9) Выводим username и рейтинг лучшего пользователя:
+best_author = Author.objects.order_by('-rating').values('user__username', 'rating').first()
+print(best_author['user__username'], best_author['rating'])
+
+10) Выводим информацию о лучшей статье:
+best_post = Post.objects.filter(post_type='статья').order_by('-rating').first()
+print(best_post.created_time, best_post.author.user.username, best_post.rating, best_post.title, best_post.preview())
+
+11) Выводим все комментарии к лучшей статье:
+comments = Comment.objects.filter(post=post1).values('created_time', 'user__username', 'rating', 'text')
+for comment in comments:
+    print(comment['created_time'], comment['user__username'], comment['rating'], comment['text'])
