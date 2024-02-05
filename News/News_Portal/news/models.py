@@ -21,6 +21,9 @@ class Author(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name.title()
+
 
 class Post(models.Model):
     news = "NW"
@@ -37,6 +40,9 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
     rating = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.title.title()}: {self.text[:20]}'
 
     def like(self):
         self.rating += 1
