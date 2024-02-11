@@ -1,40 +1,109 @@
-# Импортируем класс, который говорит нам о том,
-# что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView, DetailView
+from django.urls import reverse_lazy
+from django.views.generic import (ListView, DetailView, CreateView, UpdateView, DeleteView)
+from .filters import PostFilter
+from .forms import PostForm
 from .models import Post
-from datetime import datetime
+from django.shortcuts import redirect
+
 
 
 class PostsList(ListView):
-    # Указываем модель, объекты которой мы будем выводить
     model = Post
-    # Поле, которое будет использоваться для сортировки объектов
     ordering = '-created_time'
-    # Указываем имя шаблона, в котором будут все инструкции о том,
-    # как именно пользователю должны быть показаны наши объекты
     template_name = 'flatpages/posts.html'
-    # Это имя списка, в котором будут лежать все объекты.
-    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'posts'
+    paginate_by = 10  # вот так мы можем указать количество записей на странице
+
+
+class PostSearch(ListView):
+    model = Post
+    ordering = '-created_time'
+    template_name = 'flatpages/post_search.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
 
     def get_context_data(self, **kwargs):
-        # С помощью super() мы обращаемся к родительским классам
-        # и вызываем у них метод get_context_data с теми же аргументами,
-        # что и были переданы нам.
-        # В ответе мы должны получить словарь.
         context = super().get_context_data(**kwargs)
-        # К словарю добавим текущую дату в ключ 'time_now'.
-        context['time_now'] = datetime.utcnow()
-        # Добавим ещё одну пустую переменную,
-        # чтобы на её примере рассмотреть работу ещё одного фильтра.
-        context['next_post'] = None
+        context['filterset'] = self.filterset
         return context
 
 
 class PostDetail(DetailView):
-    # Модель всё та же, но мы хотим получать информацию по отдельному товару
     model = Post
-    # Используем другой шаблон — product.html
     template_name = 'flatpages/post.html'
-    # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
+
+
+class NewsCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'flatpages/news_create.html'
+
+    def form_valid(self, form):
+        Post = form.save(commit=False)
+        Post.post_type = 'Новость'
+        return super().form_valid(form)
+
+
+class NewsUpdate(UpdateView):
+    model = Post
+    fields = ['author', 'title', 'text']
+    template_name = 'flatpages/news_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        Post = self.get_object()
+        if Post.post_type != 'Новость':
+            return redirect('articles_edit', Post.pk)
+        return super(NewsUpdate, self).dispatch(request, *args, **kwargs)
+
+
+class NewsDelete(DeleteView):
+    model = Post
+    template_name = 'flatpages/news_delete.html'
+    success_url = reverse_lazy('post_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        Post = self.get_object()
+        if Post.post_type != 'Новость':
+            return redirect('articles_delete', Post.pk)
+        return super(NewsDelete, self).dispatch(request, *args, **kwargs)
+
+
+class ArticlesCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'flatpages/articles_create.html'
+
+    def form_valid(self, form):
+        Post = form.save(commit=False)
+        Post.post_type = 'Статья'
+        return super().form_valid(form)
+
+
+class ArticlesUpdate(UpdateView):
+    model = Post
+    fields = ['author', 'title', 'text']
+    template_name = 'flatpages/articles_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        Post = self.get_object()
+        if Post.post_type != 'Статья':
+            return redirect('news_edit', Post.pk)
+        return super(ArticlesUpdate, self).dispatch(request, *args, **kwargs)
+
+
+class ArticlesDelete(DeleteView):
+    model = Post
+    template_name = 'flatpages/articles_delete.html'
+    success_url = reverse_lazy('post_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        Post = self.get_object()
+        if Post.post_type != 'Статья':
+            return redirect('news_delete', Post.pk)
+        return super(ArticlesDelete, self).dispatch(request, *args, **kwargs)
