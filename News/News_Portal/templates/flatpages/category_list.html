@@ -11,14 +11,17 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>Все новости</h1>
+    <h1>Список новостей</h1>
 
     <h3>{% current_time '%b %d %Y %A' %}</h3>
-    <h3>{{ next_post|default_if_none:"Свежие новости!" }}</h3>
-    <h3>Количество всех новостей: {{ posts|length }}</h3>
+    <h3>Количество всех новостей: {{ category_news_list|length }}</h3>
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' categories.id%}" class="btn-secondary btn-sm">Подписаться
+        </a></p>
+    {% endif %}
 
     <hr>
-    {% if posts %}
+    {% if category_news_list %}
         <table>
             <tr>
                 <td><h5>Заголовок</h5></td>
@@ -27,7 +30,7 @@ Posts
                 <td><h5>Дата публикации</h5></td>
                 <td><h5>Текст статьи</h5></td>
             </tr>
-            {% for post in posts %}
+            {% for post in category_news_list %}
             <tr>
                 <td>{{ post.title|censor }}</td>
                 <td>{% for categories in post.categories.all %}

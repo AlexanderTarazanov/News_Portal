@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'news',
+    'news.apps.NewsConfig',
     'django_filters',
     'allauth',
     'allauth.account',
@@ -153,3 +153,14 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {'signup': 'accounts.forms.BasicSignupForm'}
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'alextarazanow'
+EMAIL_HOST_PASSWORD = 'fyypqttxcjjklxsx'
+EMAIL_HOST_SSL = True
+DEFAULT_FROM_EMAIL = 'alextarazanow@yandex.ru'
+
+SITE_URL = 'http://127.0.0.1:8000'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
