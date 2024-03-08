@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
+    'django_apscheduler'
 ]
 
 SITE_ID = 1
@@ -151,15 +151,19 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
 ACCOUNT_FORMS = {'signup': 'accounts.forms.BasicSignupForm'}
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'alextarazanow'
-EMAIL_HOST_PASSWORD = 'fyypqttxcjjklxsx'
+EMAIL_HOST_USER = 'sf.project.notification'
+EMAIL_HOST_PASSWORD = 'yfffcaildzxoubqj'
 EMAIL_HOST_SSL = True
-DEFAULT_FROM_EMAIL = 'alextarazanow@yandex.ru'
+DEFAULT_FROM_EMAIL = 'sf.project.notification@yandex.ru'
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 SITE_URL = 'http://127.0.0.1:8000'
 
