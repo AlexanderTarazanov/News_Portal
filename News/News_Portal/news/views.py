@@ -6,6 +6,7 @@ from .forms import PostForm
 from .models import Post, Category
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from .tasks import send_email_task
 
 
 class PostsList(ListView):
@@ -51,6 +52,7 @@ class NewsCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         Post = form.save(commit=False)
         Post.post_type = 'Новость'
+        send_email_task.delay(Post.pk)
         return super().form_valid(form)
 
 
@@ -95,6 +97,7 @@ class ArticlesCreate(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         Post = form.save(commit=False)
         Post.post_type = 'Статья'
+        send_email_task(Post.pk)
         return super().form_valid(form)
 
 

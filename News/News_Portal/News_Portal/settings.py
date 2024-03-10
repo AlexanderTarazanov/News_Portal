@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'django_apscheduler'
+    #'django_apscheduler'
 ]
 
 SITE_ID = 1
@@ -158,13 +158,19 @@ ACCOUNT_FORMS = {'signup': 'accounts.forms.BasicSignupForm'}
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'sf.project.notification'
-EMAIL_HOST_PASSWORD = 'yfffcaildzxoubqj'
-EMAIL_HOST_SSL = True
+EMAIL_HOST_PASSWORD = 'qdcvrdnyfbxxtwze'
+EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'sf.project.notification@yandex.ru'
 
-APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
-APSCHEDULER_RUN_NOW_TIMEOUT = 25
+#APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+#APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
 SITE_URL = 'http://127.0.0.1:8000'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
